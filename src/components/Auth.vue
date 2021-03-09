@@ -109,7 +109,7 @@ export default {
         if (!res) {
           throw new Error('Could not login');
         }
-        console.log('logged in');
+        this.$router.push({name: 'Home'})
       } catch (err) {
         this.feedback = err;
       }

@@ -1,12 +1,13 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
+    <AdminNav />
   </div>
 </template>
 
 <script>
+import AdminNav from '@/components/AdminNav'
 export default {
   name: 'Home',
-  components: {},
+  components: {AdminNav},
 };
 </script>
