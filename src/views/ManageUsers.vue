@@ -2,17 +2,17 @@
     <div>
         <AdminNav />
         <v-btn fab color="primary" dark @click.stop="dialog = true"><v-icon>mdi-plus</v-icon></v-btn>
-        <AddProduct @close="closeDialog" :dialog="dialog" />
+        <AddUser @close="closeDialog" :dialog="dialog"/>
     </div>
 </template>
 
 <script>
 import AdminNav from '@/components/AdminNav'
-import AddProduct from '@/components/AddProduct'
+import AddUser from '@/components/AddUser'
 export default {
     components: {
         AdminNav,
-        AddProduct
+        AddUser
     },
     data() {
         return {

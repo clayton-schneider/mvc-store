@@ -35,6 +35,11 @@ const routes = [
     path: '/manage-products',
     name: "ManageProducts",
     component: () => import('../views/ManageProducts.vue')
+  },
+  {
+    path: '/manage-users',
+    name: "ManageUsers",
+    component: () => import('../views/ManageUsers.vue')
   }
 ];
 

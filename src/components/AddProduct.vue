@@ -1,11 +1,8 @@
 <template>
     <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
-        <template v-slot:activator="{on, attrs}">
-            <v-btn fab color="primary" dark v-bind="attrs" v-on="on"><v-icon>mdi-plus</v-icon></v-btn>
-        </template>
         <v-card>
             <v-toolbar dark color="primary">
-                <v-btn icon dark @click='dialog = false'><v-icon>mdi-close</v-icon></v-btn>
+                <v-btn icon dark @click='emitClose'><v-icon>mdi-close</v-icon></v-btn>
                 <v-toolbar-title>Add a new product</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-toolbar-items>
@@ -42,12 +39,12 @@
 <script>
 export default {
     name: 'AddProduct',
+    props: ['dialog'],
     data() {
         return {
             code: '',
             description: '',
             file: {},
-            dialog: 'false',
             name: '',
             price: '',
 
@@ -60,6 +57,9 @@ export default {
     methods: {
         async createProduct() {
             console.log(this.code, this.description, this.file, this.name, this.price)
+        },
+        emitClose(event) {
+            this.$emit('close', false)
         }
     }
 }
