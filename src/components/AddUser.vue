@@ -10,44 +10,76 @@
                 </v-toolbar-items>
             </v-toolbar>
             <v-container>
-                <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                        <v-text-field label="Product Name" v-model="name" :rules="[rules.required]" required></v-text-field>
-                    </v-col>
+                <v-form ref="userForm">
+                    <v-row>
+                        <v-col cols="12" sm="6" >
+                            <v-text-field label="User Email" v-model="email" :rules="[rules.required]" required></v-text-field>
+                        </v-col>
 
-                    <v-col cols="12" sm="6" md="4">
-                        <v-text-field v-model="price" label="Price" type="number" step=".01" prefix="$" :rules="[rules.required]" required></v-text-field>
-                    </v-col>
+                        <v-col cols="12" sm="6" >
+                            <v-text-field v-model="password" label="Password" type="password" :rules="[rules.required]" required></v-text-field>
+                        </v-col>
 
-                    <v-col cols="12" sm="6" md="4">
-                        <v-file-input v-model="file" label="Display Image" :rules="[rules.file]" required></v-file-input>
-                    </v-col>
+                        <v-col cols="12" sm="4" >
+                            <div>Are they an individual or organization?</div>
+                            <v-radio-group v-model="type" row mandatory>
 
-                    <v-col cols="12" sm="6">
-                        <v-textarea label="Product Description" rows="2" auto-grow v-model="description" :rules="[rules.required]" required></v-textarea>
-                    </v-col>
+                                <v-radio label="Individual" value="individual">
+                                    Individual
+                                </v-radio>
+                                <v-radio label="Organization" value="organization">
+                                    Organization
+                                </v-radio>
+                            </v-radio-group>
+                        </v-col>
 
-                    <v-col cols="12" sm="6">
-                        <v-textarea label="Embed Code" rows="2" auto-grow v-model="code" :rules="[rules.required]" required></v-textarea>
-                    </v-col>
-                </v-row>
+                        <template v-if="type === 'individual'">
+                            <v-col cols="12" sm="4">
+                                <v-text-field label="First Name"  v-model="firstName" :rules="[rules.required]" required></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="4">
+                                <v-text-field label="Last Name"  v-model="lastName" :rules="[rules.required]" required></v-text-field>
+                            </v-col>
+                        </template>
+
+                        <v-col v-else cols="12" sm="4">
+                            <v-text-field label="Organization Name"  v-model="orgName" :rules="[rules.required]" required></v-text-field>
+                        </v-col>
+
+                    </v-row>
+                </v-form>
+
+                <LoadingAlert :alert="alert" :state="state" @saveSuccess="saveSuccess" @saveError="closeAlert">
+                    <template #loading>We are trying to save user data</template>
+                    <template #success>User successfully created</template>
+                    <template #error>There was an error trying to save user data. Try again later.</template>
+                </LoadingAlert>
             </v-container>
         </v-card>
     </v-dialog>
 </template>
 
 <script>
+import LoadingAlert from '@/components/LoadingAlert'
+
 export default {
     name: 'AddProduct',
+    components: {
+        LoadingAlert
+    },
     props: ['dialog'],
     data() {
         return {
-            code: '',
-            description: '',
-            file: {},
-            dialog: 'false',
+            alert: false,
+            state: 'success',
+            type: '',
+            email: '',
+            password: '',
             name: '',
-            price: '',
+            type: '',
+            firstName: '',
+            lastName: '',
+            orgName: '',
 
             rules: {
                 required: value => !!value || 'Required',
@@ -56,11 +88,28 @@ export default {
         }
     },
     methods: {
-        async createProduct() {
-            console.log(this.code, this.description, this.file, this.name, this.price)
+        createProduct() {
+            console.log(this.email, this.password, this.type, this.firstName, this.lastName, this.orgName)
+            this.alert = true
         },
         emitClose(event) {
             this.$emit('close', false)
+        },
+        closeAlert() {
+            this.alert = false
+        },
+        clearData() {
+            this.email = ''
+            this.password = ''
+            this.type = 'individual'
+            this.firstName = ''
+            this.lastName = ''
+            this.orgName = ''
+        },
+        saveSuccess() {
+            this.clearData()
+            this.$refs.userForm.resetValidation()
+            this.closeAlert()
         }
     }
 }

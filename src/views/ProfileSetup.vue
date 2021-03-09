@@ -15,7 +15,7 @@
               <v-radio label="Individual" value="individual"
                 >Individual</v-radio
               >
-              <v-radio label="Institution" value="institution"
+              <v-radio label="Organization" value="organization"
                 >Organization</v-radio
               >
             </v-radio-group>
