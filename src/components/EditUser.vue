@@ -3,7 +3,7 @@
         <v-card>
             <v-toolbar dark color="primary">
                 <v-btn icon dark @click='emitClose'><v-icon>mdi-close</v-icon></v-btn>
-                <v-toolbar-title>Add a new user</v-toolbar-title>
+                <v-toolbar-title>Edit user: {{user.firstName}} {{user.lastName}}</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-toolbar-items>
                     <v-btn dark text @click='createProduct'><v-icon>mdi-save</v-icon>Save</v-btn>
@@ -13,16 +13,16 @@
                 <v-form ref="userForm">
                     <v-row>
                         <v-col cols="12" sm="6" >
-                            <v-text-field label="User Email" v-model="email" :rules="[rules.required]" required></v-text-field>
+                            <v-text-field label="User Email" v-model="user.email" :rules="[rules.required]" required></v-text-field>
                         </v-col>
 
                         <v-col cols="12" sm="6" >
-                            <v-text-field v-model="password" label="Password" type="password" :rules="[rules.required]" required></v-text-field>
+                            <v-text-field v-model="user.password" label="Password" type="password" :rules="[rules.required]" required></v-text-field>
                         </v-col>
 
                         <v-col cols="12" sm="4" >
                             <div>Are they an individual or organization?</div>
-                            <v-radio-group v-model="type" row mandatory>
+                            <v-radio-group v-model="user.type" row mandatory>
 
                                 <v-radio label="Individual" value="individual">
                                     Individual
@@ -33,17 +33,17 @@
                             </v-radio-group>
                         </v-col>
 
-                        <template v-if="type === 'individual'">
+                        <template v-if="user.type === 'individual'">
                             <v-col cols="12" sm="4">
-                                <v-text-field label="First Name"  v-model="firstName" :rules="[rules.required]" required></v-text-field>
+                                <v-text-field label="First Name"  v-model="user.firstName" :rules="[rules.required]" required></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="4">
-                                <v-text-field label="Last Name"  v-model="lastName" :rules="[rules.required]" required></v-text-field>
+                                <v-text-field label="Last Name"  v-model="user.lastName" :rules="[rules.required]" required></v-text-field>
                             </v-col>
                         </template>
 
                         <v-col v-else cols="12" sm="4">
-                            <v-text-field label="Organization Name"  v-model="orgName" :rules="[rules.required]" required></v-text-field>
+                            <v-text-field label="Organization Name"  v-model="user.orgName" :rules="[rules.required]" required></v-text-field>
                         </v-col>
 
                     </v-row>
@@ -51,7 +51,7 @@
 
                 <LoadingAlert :alert="alert" :state="state" @saveSuccess="saveSuccess" @saveError="closeAlert">
                     <template #loading>We are trying to save user data</template>
-                    <template #success>User successfully created</template>
+                    <template #success>User successfully updated</template>
                     <template #error>There was an error trying to save user data. Try again later.</template>
                 </LoadingAlert>
             </v-container>
@@ -63,11 +63,11 @@
 import LoadingAlert from '@/components/LoadingAlert'
 
 export default {
-    name: 'AddUser',
+    name: 'EditUser',
     components: {
         LoadingAlert
     },
-    props: ['dialog'],
+    props: ['dialog', 'user'],
     data() {
         return {
             alert: false,

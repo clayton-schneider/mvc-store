@@ -1,18 +1,21 @@
 <template>
     <div>
         <AdminNav />
-        <v-btn fab color="primary" dark @click.stop="dialog = true"><v-icon>mdi-plus</v-icon></v-btn>
+        <UserDirectory @dialogClicked="openDialog" />
         <AddUser @close="closeDialog" :dialog="dialog"/>
     </div>
 </template>
 
 <script>
+import UserDirectory from '@/components/UserDirectory'
 import AdminNav from '@/components/AdminNav'
 import AddUser from '@/components/AddUser'
+
 export default {
     components: {
         AdminNav,
-        AddUser
+        AddUser,
+        UserDirectory
     },
     data() {
         return {
@@ -22,6 +25,9 @@ export default {
     methods: {
         closeDialog() {
             this.dialog = false
+        },
+        openDialog() {
+            this.dialog = true
         }
     }
     
