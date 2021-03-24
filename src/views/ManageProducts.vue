@@ -1,18 +1,20 @@
 <template>
     <div>
         <AdminNav />
-        <v-btn fab color="primary" dark @click.stop="dialog = true"><v-icon>mdi-plus</v-icon></v-btn>
+        <ProductDirectory @dialogClicked="openDialog" />
         <AddProduct @close="closeDialog" :dialog="dialog" />
     </div>
 </template>
 
 <script>
 import AdminNav from '@/components/AdminNav'
+import ProductDirectory from '@/components/ProductDirectory'
 import AddProduct from '@/components/AddProduct'
 export default {
     components: {
         AdminNav,
-        AddProduct
+        AddProduct,
+        ProductDirectory
     },
     data() {
         return {
@@ -22,6 +24,9 @@ export default {
     methods: {
         closeDialog() {
             this.dialog = false
+        },
+        openDialog() {
+            this.dialog = true
         }
     }
     
