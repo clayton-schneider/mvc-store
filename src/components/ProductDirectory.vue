@@ -7,7 +7,7 @@
                 <v-btn fab small color="primary" dark @click="emitDialogClicked"><v-icon>mdi-plus</v-icon></v-btn>
             </v-card-title>
             <v-card-text>
-                <v-virtual-scroll :items="products" item-height="50" height="200">
+                <v-virtual-scroll v-if="products.length" :items="products" item-height="50" height="200">
                     <template v-slot:default="{item}">
                         <v-list-item>
                             <!-- <v-list-item-avatar class="d-flex justify-center">
@@ -17,7 +17,7 @@
                             </v-list-item-avatar> -->
 
                             <v-list-item-content>
-                                <v-list-item-title>{{item.name}}</v-list-item-title>
+                                <v-list-item-title>{{item.data.name}}</v-list-item-title>
                             </v-list-item-content>
 
                             <v-list-item-action>
@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import {projectFirestore} from '../firebase/config'
 import EditProduct from '@/components/EditProduct'
 
 export default {
@@ -47,14 +48,15 @@ export default {
         return {
             dialog: false,
             product: {},
-            products: [
-                { code: '<CODE>', description: 'DESCRIPTION', file: {}, name: 'STOLEN CHILDHOODS', price: '1234'},
-                { code: '<CODE>', description: 'DESCRIPTION', file: {}, name: 'BEL ASHRAM', price: '1234'},
-                { code: '<CODE>', description: 'DESCRIPTION', file: {}, name: 'THE SAME HEART', price: '1234'},
-                { code: '<CODE>', description: 'DESCRIPTION', file: {}, name: 'RESCUING EMMANUEL', price: '1234'},
-
-            ]
+            products: []
         }
+    },
+    async mounted() {
+        const products = await projectFirestore.collection('products').get()
+        this.products = products.docs.map(doc => {
+            const reform = {id: doc.id, data: doc.data()}
+            return reform
+        })
     },
     methods: {
         emitDialogClicked() {
@@ -64,6 +66,7 @@ export default {
             this.dialog = false
         },
         openDialog(product) {
+            console.log(product)
             this.product = product
             this.dialog = true
         }

@@ -115,7 +115,7 @@ export default {
                 // Submit to Firebase
                 let docRef = await projectFirestore.collection('products').add({
                     name: this.name,
-                    decription: this.description,
+                    description: this.description,
                     price: this.price,
                     code: this.code
                 })
