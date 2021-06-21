@@ -79,6 +79,7 @@ export default {
   methods: {
     async updateUser() {
       let currentUser = projectAuth.currentUser.uid;
+      let userEmail = projectAuth.currentUser.email;
       let profileInfo = {};
 
       if (this.type === 'individual') {
@@ -86,11 +87,13 @@ export default {
           type: this.type,
           firstName: this.firstName,
           lastName: this.lastName,
+          email: userEmail,
         };
       } else {
         profileInfo = {
           type: this.orgName,
           orgName: this.orgName,
+          email: userEmail,
         };
       }
 
