@@ -86,7 +86,7 @@
 import { mapGetters, mapActions } from 'vuex';
 export default {
   name: 'DeleteAlert',
-  props: ['deleteState', 'product'],
+  props: ['product'],
   data() {
     return {
       state: 'confirm',

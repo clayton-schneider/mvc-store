@@ -38,12 +38,7 @@
         </v-virtual-scroll>
       </v-card-text>
     </v-card>
-    <EditProduct
-      :dialog="isEditProdOpen"
-      :product="product"
-      @close="closeDialog"
-      @productDeleted="productDeleted"
-    />
+    <EditProduct />
   </v-container>
 </template>
 

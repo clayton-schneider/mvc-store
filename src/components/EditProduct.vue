@@ -97,7 +97,6 @@
 </template>
 
 <script>
-import { projectFirestore } from '../firebase/config';
 import LoadingAlert from '@/components/LoadingAlert';
 import DeleteAlert from '@/components/DeleteAlert';
 import { mapGetters, mapActions } from 'vuex';
@@ -108,7 +107,6 @@ export default {
     LoadingAlert,
     DeleteAlert,
   },
-  props: ['dialog', 'product'],
   data() {
     return {
       alert: false,
@@ -122,33 +120,30 @@ export default {
   },
   computed: mapGetters(['isEditProdOpen', 'editProduct']),
   methods: {
-    ...mapActions(['TOGGLE_DEL_PROD', 'TOGGLE_EDIT_PROD']),
+    ...mapActions(['TOGGLE_DEL_PROD', 'TOGGLE_EDIT_PROD', 'EDIT_PRODUCT']),
     async updateProduct() {
       this.alert = true;
       this.state = 'loading';
-      try {
-        let res = await projectFirestore
-          .collection('products')
-          .doc(this.product.id)
-          .set({
-            code: this.product.data.code,
-            description: this.product.data.description,
-            image: this.product.data.image,
-            name: this.product.data.name,
-            price: this.product.data.price,
-          });
-        this.state = 'success';
-      } catch (err) {
-        console.log(err);
-        this.state = 'error';
-      }
+
+      // create edit object
+      const edit = {
+        id: this.editProduct.id,
+        data: {
+          code: this.editProduct.data.code,
+          description: this.editProduct.data.description,
+          image: this.editProduct.data.image,
+          name: this.editProduct.data.name,
+          price: this.editProduct.data.price,
+        },
+      };
+
+      const response = await this.EDIT_PRODUCT(edit);
+
+      this.state = response.success ? 'success' : 'error';
+      if (!response.success) console.log(response.feedback);
     },
-    closeAlert(type) {
-      if (type === 'delete') {
-        this.TOGGLE_DEL_PROD();
-      } else {
-        this.alert = false;
-      }
+    closeAlert() {
+      this.alert = false;
     },
     clearData() {
       this.email = '';
@@ -162,11 +157,6 @@ export default {
       this.clearData();
       this.$refs.productForm.resetValidation();
       this.closeAlert();
-    },
-    emitProductDeleted() {
-      this.clearData();
-      this.TOGGLE_DEL_PROD();
-      this.$emit('productDeleted');
     },
   },
 };

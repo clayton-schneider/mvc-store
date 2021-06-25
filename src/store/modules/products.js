@@ -55,9 +55,26 @@ const actions = {
       const reformat = {};
       reformat.data = newProduct;
 
-      //   Commit action to add product to product list
+      //   Commit mutation to add product to product list
       commit('addProduct', reformat);
 
+      return { success: true, feedback: '' };
+    } catch (err) {
+      return { success: false, feedback: err };
+    }
+  },
+  async EDIT_PRODUCT({ commit }, editProduct) {
+    try {
+      // submit to firebase
+      let res = await projectFirestore
+        .collection('products')
+        .doc(editProduct.id)
+        .set(editProduct.data);
+
+      // Commit mutation to update product data in product list
+      commit('updateProduct', editProduct);
+
+      // return success
       return { success: true, feedback: '' };
     } catch (err) {
       return { success: false, feedback: err };
@@ -75,6 +92,12 @@ const mutations = {
   },
   setEditProduct: (state, product) => (state.editProduct = product),
   addProduct: (state, newProduct) => state.products.unshift(newProduct),
+  updateProduct: (state, editProduct) => {
+    const index = state.products.findIndex(
+      product => product.id === editProduct.id
+    );
+    state.products[index] = editProduct;
+  },
 };
 
 export default {
