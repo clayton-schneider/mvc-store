@@ -4,19 +4,19 @@
       <v-card-title class="orange darken-4 white--text">
         Products
         <v-spacer></v-spacer>
-        <v-btn fab small color="primary" dark @click="emitDialogClicked"
+        <v-btn fab small color="primary" dark @click="TOGGLE_ADD_PROD"
           ><v-icon>mdi-plus</v-icon></v-btn
         >
       </v-card-title>
       <v-card-text>
         <v-virtual-scroll
-          v-if="products.length"
-          :items="products"
+          v-if="allProducts.length"
+          :items="allProducts"
           item-height="50"
           height="200"
         >
           <template v-slot:default="{ item }">
-            <v-list-item>
+            <v-list-item v-if="item.data.image">
               <v-list-item-avatar class="d-flex justify-center">
                 <v-avatar>
                   <img :src="item.data.image" />
@@ -28,7 +28,7 @@
               </v-list-item-content>
 
               <v-list-item-action>
-                <v-btn depressed small @click="openDialog(item)">
+                <v-btn depressed small @click="openEdit(item)">
                   Edit Product
                   <v-icon color="orange darken-4" right>mdi-open-in-new</v-icon>
                 </v-btn>
@@ -39,7 +39,7 @@
       </v-card-text>
     </v-card>
     <EditProduct
-      :dialog="dialog"
+      :dialog="isEditProdOpen"
       :product="product"
       @close="closeDialog"
       @productDeleted="productDeleted"
@@ -48,8 +48,8 @@
 </template>
 
 <script>
-import { projectFirestore } from '../firebase/config';
 import EditProduct from '@/components/EditProduct';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'ProductDirectory',
@@ -60,35 +60,28 @@ export default {
     return {
       dialog: false,
       product: {},
-      products: [],
     };
   },
+  computed: mapGetters(['allProducts', 'isEditProdOpen']),
   async mounted() {
-    await this.updateProducts();
+    this.fetchProducts();
   },
   methods: {
-    emitDialogClicked() {
-      this.$emit('dialogClicked');
-    },
+    ...mapActions([
+      'fetchProducts',
+      'TOGGLE_EDIT_PROD',
+      'TOGGLE_ADD_PROD',
+      'SET_EDIT_PRODUCT',
+    ]),
     closeDialog() {
       this.dialog = false;
     },
-    openDialog(product) {
-      console.log(product);
-      this.product = product;
-      this.dialog = true;
+    openEdit(product) {
+      this.SET_EDIT_PRODUCT(product);
+      this.TOGGLE_EDIT_PROD();
     },
-    async updateProducts() {
-      const products = await projectFirestore.collection('products').get();
-      this.products = products.docs.map(doc => {
-        const reform = { id: doc.id, data: doc.data() };
-        return reform;
-      });
-    },
-    async productDeleted() {
-      console.log('time to close edit card');
+    productDeleted() {
       this.closeDialog();
-      await this.updateProducts();
     },
   },
 };

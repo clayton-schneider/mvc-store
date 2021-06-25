@@ -1,14 +1,18 @@
 <template>
   <v-dialog
-    v-model="dialog"
+    v-model="isEditProdOpen"
     fullscreen
     hide-overlay
     transition="dialog-bottom-transition"
   >
-    <v-card v-if="product.data">
+    <v-card v-if="editProduct.data">
       <v-toolbar dark color="primary">
-        <v-btn icon dark @click="emitClose"><v-icon>mdi-close</v-icon></v-btn>
-        <v-toolbar-title>Edit Product: {{ product.data.name }}</v-toolbar-title>
+        <v-btn icon dark @click="TOGGLE_EDIT_PROD"
+          ><v-icon>mdi-close</v-icon></v-btn
+        >
+        <v-toolbar-title
+          >Edit Product: {{ editProduct.data.name }}</v-toolbar-title
+        >
         <v-spacer></v-spacer>
         <v-toolbar-items>
           <v-btn dark text @click="updateProduct"
@@ -22,7 +26,7 @@
             <v-col cols="12" sm="6" md="4">
               <v-text-field
                 label="Product Name"
-                v-model="product.data.name"
+                v-model="editProduct.data.name"
                 :rules="[rules.required]"
                 required
               ></v-text-field>
@@ -30,7 +34,7 @@
 
             <v-col cols="12" sm="6" md="4">
               <v-text-field
-                v-model="product.data.price"
+                v-model="editProduct.data.price"
                 label="Price"
                 type="number"
                 step=".01"
@@ -45,7 +49,7 @@
                 label="Product Description"
                 rows="2"
                 auto-grow
-                v-model="product.data.description"
+                v-model="editProduct.data.description"
                 :rules="[rules.required]"
                 required
               ></v-textarea>
@@ -56,7 +60,7 @@
                 label="Embed Code"
                 rows="2"
                 auto-grow
-                v-model="product.data.code"
+                v-model="editProduct.data.code"
                 :rules="[rules.required]"
                 required
               ></v-textarea>
@@ -78,19 +82,14 @@
           >
         </LoadingAlert>
 
-        <DeleteAlert
-          :product="product"
-          :deleteAlert="deleteAlert"
-          @deleteSuccess="emitProductDeleted"
-          @deleteError="deleteAlert = false"
-        >
+        <DeleteAlert :product="editProduct" @deleteError="TOGGLE_DEL_PROD">
         </DeleteAlert>
       </v-container>
       <v-btn
         color="red"
         fab
         class="white--text btn--delete"
-        @click="deleteAlert = true"
+        @click="TOGGLE_DEL_PROD"
         ><v-icon>mdi-delete</v-icon></v-btn
       >
     </v-card>
@@ -101,6 +100,7 @@
 import { projectFirestore } from '../firebase/config';
 import LoadingAlert from '@/components/LoadingAlert';
 import DeleteAlert from '@/components/DeleteAlert';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'EditProduct',
@@ -114,15 +114,15 @@ export default {
       alert: false,
       state: 'success',
 
-      deleteAlert: false,
-
       rules: {
         required: value => !!value || 'Required',
         file: value => value.size === 0 || 'File required',
       },
     };
   },
+  computed: mapGetters(['isEditProdOpen', 'editProduct']),
   methods: {
+    ...mapActions(['TOGGLE_DEL_PROD', 'TOGGLE_EDIT_PROD']),
     async updateProduct() {
       this.alert = true;
       this.state = 'loading';
@@ -143,12 +143,9 @@ export default {
         this.state = 'error';
       }
     },
-    emitClose(event) {
-      this.$emit('close', false);
-    },
     closeAlert(type) {
       if (type === 'delete') {
-        this.deleteAlert = false;
+        this.TOGGLE_DEL_PROD();
       } else {
         this.alert = false;
       }
@@ -168,7 +165,7 @@ export default {
     },
     emitProductDeleted() {
       this.clearData();
-      this.deleteAlert = false;
+      this.TOGGLE_DEL_PROD();
       this.$emit('productDeleted');
     },
   },

@@ -2,14 +2,14 @@
   <v-container>
     <v-row>
       <v-col
-        v-for="product in products"
+        v-for="product in allProducts"
         :key="product.id"
         cols="12"
         md="3"
         class="d-flex justify-center"
       >
         <v-hover v-slot="{ hover }">
-          <v-card width="400">
+          <v-card width="400" @click="log(product.id)">
             <v-img contain :aspect-ratio="2 / 3" :src="product.data.image">
               <v-expand-transition>
                 <v-card
@@ -37,8 +37,6 @@
                     <p class="pt-4">{{ shorten(product.data.description) }}</p>
                   </v-card-text>
                 </v-card>
-
-                <!-- <div></div> -->
               </v-expand-transition>
             </v-img>
           </v-card>
@@ -50,27 +48,24 @@
 
 <script>
 import { projectFirestore } from '../firebase/config';
+import { mapGetters, mapActions } from 'vuex';
 export default {
   name: 'Store',
-  data() {
-    return {
-      products: [],
-    };
-  },
   async mounted() {
-    const products = await projectFirestore.collection('products').get();
-    this.products = products.docs.map(doc => {
-      const reform = { id: doc.id, data: doc.data() };
-      return reform;
-    });
+    this.fetchProducts();
   },
+  computed: mapGetters(['allProducts']),
   methods: {
+    ...mapActions(['fetchProducts']),
     shorten(string) {
       if (string.length > 100) {
         return string.substring(0, 500) + '...';
       } else {
         return string;
       }
+    },
+    log(id) {
+      console.log(id);
     },
   },
 };

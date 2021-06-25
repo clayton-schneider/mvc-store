@@ -1,6 +1,6 @@
 <template>
   <v-dialog
-    v-model="deleteAlert"
+    v-model="isDelProdOpen"
     max-width="500px"
     persistent
     transition="dialog-bottom-transition"
@@ -60,12 +60,12 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <template v-if="state === 'confirm'">
-          <v-btn text color="primary" @click="emitDeleteError">Close</v-btn>
+          <v-btn text color="primary" @click="TOGGLE_DEL_PROD">Close</v-btn>
           <v-btn
             text
             color="error"
             :disabled="isDeleteEnabled"
-            @click="deleteProduct"
+            @click="startDelete(product.id)"
             >Delete</v-btn
           >
         </template>
@@ -75,7 +75,7 @@
         </template>
 
         <template v-else-if="state === 'success'">
-          <v-btn text color="primary" @click="emitDeleteSuccess">Close</v-btn>
+          <v-btn text color="primary" @click="deleteSuccess">Close</v-btn>
         </template>
       </v-card-actions>
     </v-card>
@@ -83,10 +83,10 @@
 </template>
 
 <script>
-import { projectFirestore } from '../firebase/config';
+import { mapGetters, mapActions } from 'vuex';
 export default {
   name: 'DeleteAlert',
-  props: ['deleteAlert', 'deleteState', 'product'],
+  props: ['deleteState', 'product'],
   data() {
     return {
       state: 'confirm',
@@ -94,29 +94,31 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['isDelProdOpen']),
     isDeleteEnabled() {
       return !(this.confirmText === this.product.data.name);
     },
   },
   methods: {
-    async deleteProduct() {
+    ...mapActions(['deleteProduct', 'TOGGLE_DEL_PROD', 'TOGGLE_EDIT_PROD']),
+    async startDelete(id) {
       this.state = 'loading';
-      try {
-        let res = await projectFirestore
-          .collection('products')
-          .doc(this.product.id)
-          .delete();
-        this.state = 'success';
-      } catch (err) {
-        console.log(err);
+      const res = await this.deleteProduct(id);
+      if (res) {
         this.state = 'error';
+        console.log(res);
+      } else {
+        this.state = 'success';
       }
     },
-    emitDeleteSuccess() {
-      this.$emit('deleteSuccess');
+    deleteSuccess() {
+      this.TOGGLE_DEL_PROD();
+      this.TOGGLE_EDIT_PROD();
+      this.confirmText = '';
+      this.state = 'confirm';
     },
     emitDeleteError() {
-      this.$emit('deleteError');
+      this.TOGGLE_DEL_PROD();
       this.state = 'confirm';
     },
   },

@@ -1,8 +1,8 @@
 <template>
   <div>
     <AdminNav />
-    <ProductDirectory @dialogClicked="openDialog" />
-    <AddProduct @close="closeDialog" :dialog="dialog" />
+    <ProductDirectory />
+    <AddProduct />
   </div>
 </template>
 
@@ -15,19 +15,6 @@ export default {
     AdminNav,
     AddProduct,
     ProductDirectory,
-  },
-  data() {
-    return {
-      dialog: false,
-    };
-  },
-  methods: {
-    closeDialog() {
-      this.dialog = false;
-    },
-    openDialog() {
-      this.dialog = true;
-    },
   },
 };
 </script>
