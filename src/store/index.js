@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import products from './modules/products';
-import diologs from './modules/dialogs';
+import productDiologs from './modules/productDialogs';
+import liscenceDialogs from './modules/liscenceDialog';
 
 Vue.use(Vuex);
 
@@ -11,6 +12,7 @@ export default new Vuex.Store({
   actions: {},
   modules: {
     products,
-    diologs,
+    productDiologs,
+    liscenceDialogs,
   },
 });

@@ -3,11 +3,13 @@ import { projectFirestore, projectStorage } from '@/firebase/config';
 const state = {
   products: [],
   editProduct: {},
+  viewProduct: {},
 };
 
 const getters = {
   allProducts: state => state.products,
   editProduct: state => state.editProduct,
+  viewProduct: state => state.viewProduct,
 };
 
 const actions = {
@@ -83,6 +85,9 @@ const actions = {
   SET_EDIT_PRODUCT({ commit }, product) {
     commit('setEditProduct', product);
   },
+  SET_VIEW_PRODUCT({ commit }, product) {
+    commit('setViewProduct', product);
+  },
 };
 
 const mutations = {
@@ -91,6 +96,7 @@ const mutations = {
     state.products = state.products.filter(product => product.id !== id);
   },
   setEditProduct: (state, product) => (state.editProduct = product),
+  setViewProduct: (state, product) => (state.viewProduct = product),
   addProduct: (state, newProduct) => state.products.unshift(newProduct),
   updateProduct: (state, editProduct) => {
     const index = state.products.findIndex(

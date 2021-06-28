@@ -9,7 +9,7 @@
         class="d-flex justify-center"
       >
         <v-hover v-slot="{ hover }">
-          <v-card width="400" @click="log(product.id)">
+          <v-card width="400" @click="openView(product)">
             <v-img contain :aspect-ratio="2 / 3" :src="product.data.image">
               <v-expand-transition>
                 <v-card
@@ -43,20 +43,23 @@
         </v-hover>
       </v-col>
     </v-row>
+
+    <ViewProduct />
   </v-container>
 </template>
 
 <script>
-import { projectFirestore } from '../firebase/config';
+import ViewProduct from './ViewProduct.vue';
 import { mapGetters, mapActions } from 'vuex';
 export default {
   name: 'Store',
+  components: { ViewProduct },
   async mounted() {
     this.fetchProducts();
   },
   computed: mapGetters(['allProducts']),
   methods: {
-    ...mapActions(['fetchProducts']),
+    ...mapActions(['fetchProducts', 'TOGGLE_VIEW_PROD', 'SET_VIEW_PRODUCT']),
     shorten(string) {
       if (string.length > 100) {
         return string.substring(0, 500) + '...';
@@ -64,8 +67,9 @@ export default {
         return string;
       }
     },
-    log(id) {
-      console.log(id);
+    openView(product) {
+      this.SET_VIEW_PRODUCT(product);
+      this.TOGGLE_VIEW_PROD();
     },
   },
 };

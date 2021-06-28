@@ -105,7 +105,6 @@ import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'AddProduct',
-  props: ['dialog'],
   components: {
     LoadingAlert,
   },
