@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="isLiscenceLogOpen"
-    max-width="500px"
+    max-width="1000px"
     persistent
     transition="dialog-bottom-transition"
   >

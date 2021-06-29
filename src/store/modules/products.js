@@ -1,13 +1,21 @@
-import { projectFirestore, projectStorage } from '@/firebase/config';
+import {
+  projectFirestore,
+  projectStorage,
+  projectAuth,
+} from '@/firebase/config';
 
 const state = {
   products: [],
+  ownedProducts: [],
+  productsForPurchase: [],
   editProduct: {},
   viewProduct: {},
 };
 
 const getters = {
   allProducts: state => state.products,
+  ownedProducts: state => state.ownedProducts,
+  productsForPurchase: state => state.productsForPurchase,
   editProduct: state => state.editProduct,
   viewProduct: state => state.viewProduct,
 };
@@ -88,6 +96,28 @@ const actions = {
   SET_VIEW_PRODUCT({ commit }, product) {
     commit('setViewProduct', product);
   },
+  async GET_OWNED_PRODUCTS({ commit, state }) {
+    const userId = await projectAuth.currentUser.uid;
+    const res = await projectFirestore
+      .collection('users')
+      .doc(userId)
+      .get();
+
+    const purchasedProductsId = res.data().purchases;
+
+    const ownedProducts = [];
+    const productsForPurchase = [];
+
+    state.products.forEach(product => {
+      if (purchasedProductsId.includes(product.id)) {
+        ownedProducts.push(product);
+      } else {
+        productsForPurchase.push(product);
+      }
+    });
+
+    commit('setOwnedProducts', { ownedProducts, productsForPurchase });
+  },
 };
 
 const mutations = {
@@ -103,6 +133,10 @@ const mutations = {
       product => product.id === editProduct.id
     );
     state.products[index] = editProduct;
+  },
+  setOwnedProducts: (state, { ownedProducts, productsForPurchase }) => {
+    state.ownedProducts = ownedProducts;
+    state.productsForPurchase = productsForPurchase;
   },
 };
 

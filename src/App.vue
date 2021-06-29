@@ -7,10 +7,14 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 export default {
   name: 'App',
 
-  components: {},
+  async mounted() {
+    this.GET_USER();
+  },
+  methods: mapActions(['GET_USER']),
 
   data: () => ({
     //
