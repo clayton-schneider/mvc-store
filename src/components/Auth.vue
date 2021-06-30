@@ -3,6 +3,11 @@
     <v-row align="center" justify="center" class="mt-10">
       <v-col cols="12" sm="10" md="4" lg="4">
         <v-card>
+          <v-row justify="center" align="center">
+            <v-col cols="4">
+              <v-img src="../../public/MVCLogo.png"></v-img>
+            </v-col>
+          </v-row>
           <v-card-title v-if="mode === 'signup'" class="headline"
             >Signup</v-card-title
           >
@@ -10,32 +15,60 @@
             >Login</v-card-title
           >
           <v-card-text>
-            <v-text-field
-              label="Email"
-              prepend-icon="mdi-email"
-              v-model="email"
-              outlined
-            ></v-text-field>
-            <v-text-field
-              label="Password"
-              prepend-icon="mdi-lock"
-              v-model="password"
-              outlined
-            ></v-text-field>
-            <p v-if="feedback">{{ feedback }}</p>
+            <v-form v-if="mode === 'login'" @submit.prevent="login">
+              <v-text-field
+                label="Email"
+                prepend-icon="mdi-email"
+                v-model="email"
+                outlined
+              ></v-text-field>
+              <v-text-field
+                label="Password"
+                prepend-icon="mdi-lock"
+                :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
+                :type="showPass ? 'text' : 'password'"
+                @click:append="showPass = !showPass"
+                v-model="password"
+                outlined
+              ></v-text-field>
+              <p v-if="feedback">{{ feedback }}</p>
+              <v-btn type="submit" color="primary" class="my-2">Login</v-btn>
+            </v-form>
+            <v-form v-else-if="mode === 'signup'" @submit.prevent="signup">
+              <v-text-field
+                label="Email"
+                prepend-icon="mdi-email"
+                v-model="email"
+                outlined
+              ></v-text-field>
+              <v-text-field
+                label="Password"
+                prepend-icon="mdi-lock"
+                :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
+                :type="showPass ? 'text' : 'password'"
+                @click:append="showPass = !showPass"
+                v-model="password"
+                outlined
+              ></v-text-field>
+              <v-text-field
+                label="Confirm Password"
+                prepend-icon="mdi-lock"
+                :append-icon="showConfirm ? 'mdi-eye' : 'mdi-eye-off'"
+                :type="showConfirm ? 'text' : 'password'"
+                @click:append="showConfirm = !showConfirm"
+                v-model="confirm"
+                outlined
+              ></v-text-field>
+              <p v-if="feedback">{{ feedback }}</p>
+              <v-btn
+                type="submit"
+                color="primary"
+                class="my-2"
+                :disabled="password !== confirm || password === ''"
+                >Signup</v-btn
+              >
+            </v-form>
           </v-card-text>
-          <v-card-actions>
-            <v-row align="center">
-              <v-col class="text-center">
-                <v-btn @click="signup" v-if="mode === 'signup'" class="my-2"
-                  >Signup</v-btn
-                >
-                <v-btn @click="login" v-else-if="mode === 'login'" class="my-2"
-                  >Login</v-btn
-                >
-              </v-col>
-            </v-row>
-          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
@@ -51,8 +84,11 @@ export default {
   data() {
     return {
       password: '',
+      confirm: '',
       email: '',
       feedback: '',
+      showPass: false,
+      showConfirm: false,
     };
   },
   methods: {
@@ -109,7 +145,7 @@ export default {
         if (!res) {
           throw new Error('Could not login');
         }
-        this.$router.push({name: 'Home'})
+        this.$router.push({ name: 'Home' });
       } catch (err) {
         this.feedback = err;
       }
