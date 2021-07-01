@@ -17,6 +17,18 @@
       <v-btn @click="logout" text>Logout</v-btn>
     </v-toolbar-items>
   </v-toolbar>
+  <v-toolbar v-else>
+    <v-toolbar-title
+      ><router-link to="/"
+        ><span class="black--text">Media</span> Voices for
+        <span class="orange--text text--darken-3">Children</span></router-link
+      ></v-toolbar-title
+    >
+    <v-spacer></v-spacer>
+    <v-toolbar-items>
+      <v-btn @click="logout" text>Logout</v-btn>
+    </v-toolbar-items>
+  </v-toolbar>
 </template>
 
 <script>
